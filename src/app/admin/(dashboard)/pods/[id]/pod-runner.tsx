@@ -83,6 +83,7 @@ export function PodRunner({
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Couldn't generate next round");
+    } finally {
       setGenerating(false);
     }
   }
