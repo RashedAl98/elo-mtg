@@ -14,11 +14,9 @@ interface RoundWithMatches {
 }
 
 const OUTCOME_BUTTONS: Array<{ outcome: MatchOutcome; label: (p1: string, p2: string) => string }> = [
-  { outcome: "p1_2_0", label: (p1) => `${p1} wins 2-0` },
-  { outcome: "p1_2_1", label: (p1) => `${p1} wins 2-1` },
-  { outcome: "draw", label: () => "Draw 1-1" },
-  { outcome: "p2_2_1", label: (_p1, p2) => `${p2} wins 2-1` },
-  { outcome: "p2_2_0", label: (_p1, p2) => `${p2} wins 2-0` },
+  { outcome: "p1_win", label: (p1) => `${p1} wins` },
+  { outcome: "draw", label: () => "Draw" },
+  { outcome: "p2_win", label: (_p1, p2) => `${p2} wins` },
 ];
 
 function outcomeSummary(m: Match, playersById: Record<string, string>): string {
@@ -26,14 +24,10 @@ function outcomeSummary(m: Match, playersById: Record<string, string>): string {
   if (m.outcome === "bye") return `${p1} — bye`;
   const p2 = m.player2_id ? playersById[m.player2_id] ?? "?" : "?";
   switch (m.outcome) {
-    case "p1_2_0":
-      return `${p1} def. ${p2} 2-0`;
-    case "p1_2_1":
-      return `${p1} def. ${p2} 2-1`;
-    case "p2_2_0":
-      return `${p2} def. ${p1} 2-0`;
-    case "p2_2_1":
-      return `${p2} def. ${p1} 2-1`;
+    case "p1_win":
+      return `${p1} def. ${p2}`;
+    case "p2_win":
+      return `${p2} def. ${p1}`;
     case "draw":
       return `${p1} draws ${p2}`;
     default:

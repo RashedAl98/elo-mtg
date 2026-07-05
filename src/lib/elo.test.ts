@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyEloUpdate, expectedScore, kFactor, movMultiplier, scoreForPlayer1 } from "./elo";
+import { applyEloUpdate, expectedScore, kFactor, scoreForPlayer1 } from "./elo";
 
 describe("expectedScore", () => {
   it("is 0.5 for equal ratings", () => {
@@ -24,54 +24,27 @@ describe("kFactor", () => {
   });
 });
 
-describe("movMultiplier", () => {
-  it("is 1.0 for a 2-0 sweep or a draw", () => {
-    expect(movMultiplier("p1_2_0")).toBe(1.0);
-    expect(movMultiplier("p2_2_0")).toBe(1.0);
-    expect(movMultiplier("draw")).toBe(1.0);
-  });
-
-  it("is 0.75 for a closer 2-1 win", () => {
-    expect(movMultiplier("p1_2_1")).toBe(0.75);
-    expect(movMultiplier("p2_2_1")).toBe(0.75);
-  });
-});
-
 describe("scoreForPlayer1", () => {
   it("returns 1/0/0.5 for win/loss/draw", () => {
-    expect(scoreForPlayer1("p1_2_0")).toBe(1);
-    expect(scoreForPlayer1("p1_2_1")).toBe(1);
-    expect(scoreForPlayer1("p2_2_0")).toBe(0);
-    expect(scoreForPlayer1("p2_2_1")).toBe(0);
+    expect(scoreForPlayer1("p1_win")).toBe(1);
+    expect(scoreForPlayer1("p2_win")).toBe(0);
     expect(scoreForPlayer1("draw")).toBe(0.5);
   });
 });
 
 describe("applyEloUpdate", () => {
-  it("moves equal-rated provisional players by +/-20 on a 2-0 win", () => {
+  it("moves equal-rated provisional players by +/-20 on a win", () => {
     const result = applyEloUpdate({
       p1Rating: 1500,
       p2Rating: 1500,
       p1GamesPlayed: 0,
       p2GamesPlayed: 0,
-      outcome: "p1_2_0",
+      outcome: "p1_win",
     });
     expect(result.p1Delta).toBe(20);
     expect(result.p2Delta).toBe(-20);
     expect(result.p1RatingAfter).toBe(1520);
     expect(result.p2RatingAfter).toBe(1480);
-  });
-
-  it("moves equal-rated provisional players by a smaller +/-15 on a closer 2-1 win", () => {
-    const result = applyEloUpdate({
-      p1Rating: 1500,
-      p2Rating: 1500,
-      p1GamesPlayed: 0,
-      p2GamesPlayed: 0,
-      outcome: "p1_2_1",
-    });
-    expect(result.p1Delta).toBe(15);
-    expect(result.p2Delta).toBe(-15);
   });
 
   it("leaves ratings unchanged on a draw between equal players", () => {
@@ -92,7 +65,7 @@ describe("applyEloUpdate", () => {
       p2Rating: 1400,
       p1GamesPlayed: 0,
       p2GamesPlayed: 0,
-      outcome: "p1_2_0",
+      outcome: "p1_win",
     });
     expect(result.p1Delta).toBeGreaterThan(0);
     expect(result.p1Delta).toBeLessThan(20);
@@ -106,9 +79,9 @@ describe("applyEloUpdate", () => {
       p2Rating: 1500,
       p1GamesPlayed: 10,
       p2GamesPlayed: 0,
-      outcome: "p1_2_0",
+      outcome: "p1_win",
     });
-    expect(result.p1Delta).toBe(12); // round(24 * 1 * 0.5)
-    expect(result.p2Delta).toBe(-20); // round(40 * 1 * 0.5)
+    expect(result.p1Delta).toBe(12); // round(24 * 0.5)
+    expect(result.p2Delta).toBe(-20); // round(40 * 0.5)
   });
 });

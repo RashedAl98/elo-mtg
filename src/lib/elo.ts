@@ -1,4 +1,4 @@
-export type MatchOutcome = "p1_2_0" | "p1_2_1" | "p2_2_0" | "p2_2_1" | "draw";
+export type MatchOutcome = "p1_win" | "p2_win" | "draw";
 
 export const BASE_RATING = 1500;
 const PROVISIONAL_K = 40;
@@ -15,15 +15,10 @@ export function expectedScore(ratingA: number, ratingB: number): number {
   return 1 / (1 + 10 ** ((ratingB - ratingA) / 400));
 }
 
-/** Margin-of-victory multiplier: a closer (2-1) match moves rating less than a clean sweep. */
-export function movMultiplier(outcome: MatchOutcome): number {
-  return outcome === "p1_2_1" || outcome === "p2_2_1" ? 0.75 : 1.0;
-}
-
 /** Actual score (0, 0.5, or 1) for player 1 given the match outcome. */
 export function scoreForPlayer1(outcome: MatchOutcome): number {
   if (outcome === "draw") return 0.5;
-  return outcome === "p1_2_0" || outcome === "p1_2_1" ? 1 : 0;
+  return outcome === "p1_win" ? 1 : 0;
 }
 
 export interface EloUpdateInput {
@@ -58,10 +53,9 @@ export function applyEloUpdate({
   const s2 = 1 - s1;
   const e1 = expectedScore(p1Rating, p2Rating);
   const e2 = 1 - e1;
-  const mov = movMultiplier(outcome);
 
-  const p1Delta = Math.round(kFactor(p1GamesPlayed) * mov * (s1 - e1));
-  const p2Delta = Math.round(kFactor(p2GamesPlayed) * mov * (s2 - e2));
+  const p1Delta = Math.round(kFactor(p1GamesPlayed) * (s1 - e1));
+  const p2Delta = Math.round(kFactor(p2GamesPlayed) * (s2 - e2));
 
   return {
     p1RatingBefore: p1Rating,

@@ -105,7 +105,7 @@ function backtrackPair(
 export interface RawMatch {
   player1Id: string;
   player2Id: string | null;
-  outcome: "p1_2_0" | "p1_2_1" | "p2_2_0" | "p2_2_1" | "draw" | "bye";
+  outcome: "p1_win" | "p2_win" | "draw" | "bye";
 }
 
 /** Folds an event's matches-so-far into the state generateSwissPairings needs for the next round. */
@@ -131,7 +131,7 @@ export function computeStandingsState(
     if (m.outcome === "draw") {
       matchPoints[m.player1Id] += 1;
       matchPoints[m.player2Id] += 1;
-    } else if (m.outcome === "p1_2_0" || m.outcome === "p1_2_1") {
+    } else if (m.outcome === "p1_win") {
       matchPoints[m.player1Id] += 3;
     } else {
       matchPoints[m.player2Id] += 3;

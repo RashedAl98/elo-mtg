@@ -128,7 +128,7 @@ describe("computeStandingsState", () => {
     const { players, previousOpponents } = computeStandingsState(
       seatOrder,
       [
-        { player1Id: "p0", player2Id: "p1", outcome: "p1_2_0" },
+        { player1Id: "p0", player2Id: "p1", outcome: "p1_win" },
         { player1Id: "p2", player2Id: "p3", outcome: "draw" },
         { player1Id: "p4", player2Id: null, outcome: "bye" },
       ],

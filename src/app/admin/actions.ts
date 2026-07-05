@@ -246,8 +246,8 @@ export async function recordMatchResult({
     .eq("id", matchId);
   if (updateMatchError) throw updateMatchError;
 
-  const p1Won = outcome === "p1_2_0" || outcome === "p1_2_1";
-  const p2Won = outcome === "p2_2_0" || outcome === "p2_2_1";
+  const p1Won = outcome === "p1_win";
+  const p2Won = outcome === "p2_win";
   const isDraw = outcome === "draw";
 
   await updatePlayerStats(seasonId, match.player1_id, {

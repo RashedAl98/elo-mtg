@@ -4,9 +4,8 @@ import { getPlayer, getPlayerMatchHistory, getPlayerSeasonHistory } from "@/lib/
 
 function outcomeLabel(outcome: string, isPlayer1: boolean): string {
   if (outcome === "draw") return "Draw";
-  const won = (outcome === "p1_2_0" || outcome === "p1_2_1") === isPlayer1;
-  const score = outcome.endsWith("2_0") ? "2-0" : "2-1";
-  return won ? `Won ${score}` : `Lost ${score}`;
+  const won = (outcome === "p1_win") === isPlayer1;
+  return won ? "Won" : "Lost";
 }
 
 export default async function PlayerPage({ params }: { params: Promise<{ id: string }> }) {

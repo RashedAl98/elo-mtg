@@ -1,4 +1,4 @@
-export type MatchOutcomeDb = "p1_2_0" | "p1_2_1" | "p2_2_0" | "p2_2_1" | "draw" | "bye";
+export type MatchOutcomeDb = "p1_win" | "p2_win" | "draw" | "bye";
 
 export interface Player {
   id: string;
