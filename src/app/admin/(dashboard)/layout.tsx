@@ -14,9 +14,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="mx-auto min-h-screen max-w-2xl px-4 py-4">
-      <header className="mb-6 flex items-center justify-between border-b pb-3">
-        <Link href="/admin" className="text-lg font-bold">
+    <div className="mx-auto min-h-screen w-full max-w-2xl px-4 py-6">
+      <header className="mb-6 flex items-center justify-between border-b border-edge pb-3">
+        <Link href="/admin" className="font-display text-lg font-bold tracking-wide text-gold-bright">
           Admin
         </Link>
         <SignOutButton />

@@ -10,8 +10,8 @@ export default async function NewEventPage() {
 
   return (
     <div>
-      <h1 className="mb-1 text-xl font-bold">New event</h1>
-      <p className="mb-4 text-sm text-gray-500">{activeSeason.label}</p>
+      <h1 className="mb-1 font-display text-xl font-bold tracking-wide text-gold-bright">New event</h1>
+      <p className="mb-4 text-sm text-muted">{activeSeason.label}</p>
       <NewEventForm seasonId={activeSeason.id} allPlayers={players} />
     </div>
   );

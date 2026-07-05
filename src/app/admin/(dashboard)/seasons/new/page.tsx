@@ -32,35 +32,37 @@ export default function NewSeasonPage() {
 
   return (
     <div>
-      <h1 className="mb-4 text-xl font-bold">Start a new season</h1>
-      <p className="mb-4 text-sm text-gray-500">
+      <h1 className="mb-4 font-display text-xl font-bold tracking-wide text-gold-bright">
+        Start a new season
+      </h1>
+      <p className="mb-4 text-sm text-muted">
         This deactivates the current season (if any) and starts every player fresh at 1500.
       </p>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <label className="flex flex-col gap-1 text-sm">
+        <label className="flex flex-col gap-1 text-sm text-muted">
           Label
           <input
             value={label}
             onChange={(e) => setLabel(e.target.value)}
             required
-            className="rounded border px-3 py-2"
+            className="rounded border border-edge bg-raised px-3 py-2 text-ink"
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm">
+        <label className="flex flex-col gap-1 text-sm text-muted">
           Start date
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
             required
-            className="rounded border px-3 py-2"
+            className="rounded border border-edge bg-raised px-3 py-2 text-ink [color-scheme:dark]"
           />
         </label>
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-loss">{error}</p>}
         <button
           type="submit"
           disabled={loading}
-          className="rounded bg-black px-4 py-3 font-medium text-white disabled:opacity-50"
+          className="rounded bg-gold px-4 py-3 font-semibold text-black hover:bg-gold-bright disabled:opacity-50"
         >
           {loading ? "Starting…" : "Start season"}
         </button>

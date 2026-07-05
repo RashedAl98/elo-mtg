@@ -10,7 +10,7 @@ export function SeasonSelector({ seasons, selectedSeasonId }: { seasons: Season[
     <select
       defaultValue={selectedSeasonId}
       onChange={(e) => router.push(`/?season=${e.target.value}`)}
-      className="rounded border px-2 py-1 text-sm"
+      className="rounded border border-edge bg-raised px-2 py-1 text-sm text-ink"
     >
       {seasons.map((s) => (
         <option key={s.id} value={s.id}>

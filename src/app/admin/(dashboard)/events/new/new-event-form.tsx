@@ -73,44 +73,53 @@ export function NewEventForm({ seasonId, allPlayers }: { seasonId: string; allPl
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-      <label className="flex flex-col gap-1 text-sm">
+      <label className="flex flex-col gap-1 text-sm text-muted">
         Event date
         <input
           type="date"
           value={eventDate}
           onChange={(e) => setEventDate(e.target.value)}
           required
-          className="rounded border px-3 py-2"
+          className="rounded border border-edge bg-raised px-3 py-2 text-ink [color-scheme:dark]"
         />
       </label>
 
       <div>
         <p className="mb-2 text-sm font-semibold">
           Seating order ({seatOrder.length}){" "}
-          <span className="font-normal text-gray-400">— tap around the table in seat order</span>
+          <span className="font-normal text-muted/70">— tap around the table in seat order</span>
         </p>
         {seatOrder.length === 0 ? (
-          <p className="text-sm text-gray-400">No players seated yet.</p>
+          <p className="text-sm text-muted/70">No players seated yet.</p>
         ) : (
           <ol className="flex flex-col gap-1">
             {seatOrder.map((p, i) => (
-              <li key={p.id} className="flex items-center justify-between rounded border px-3 py-2 text-sm">
+              <li
+                key={p.id}
+                className="flex items-center justify-between rounded border border-edge bg-surface px-3 py-2 text-sm"
+              >
                 <span>
-                  {i + 1}. {p.name}
+                  <span className="mr-1.5 text-muted">{i + 1}.</span>
+                  {p.name}
                 </span>
-                <span className="flex gap-2">
-                  <button type="button" onClick={() => move(i, -1)} disabled={i === 0} className="disabled:opacity-30">
+                <span className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => move(i, -1)}
+                    disabled={i === 0}
+                    className="text-muted hover:text-ink disabled:opacity-30"
+                  >
                     ↑
                   </button>
                   <button
                     type="button"
                     onClick={() => move(i, 1)}
                     disabled={i === seatOrder.length - 1}
-                    className="disabled:opacity-30"
+                    className="text-muted hover:text-ink disabled:opacity-30"
                   >
                     ↓
                   </button>
-                  <button type="button" onClick={() => removeFromSeat(i)} className="text-red-500">
+                  <button type="button" onClick={() => removeFromSeat(i)} className="text-loss">
                     ✕
                   </button>
                 </span>
@@ -127,13 +136,13 @@ export function NewEventForm({ seasonId, allPlayers }: { seasonId: string; allPl
             value={newPlayerName}
             onChange={(e) => setNewPlayerName(e.target.value)}
             placeholder="New player name"
-            className="flex-1 rounded border px-3 py-2 text-sm"
+            className="flex-1 rounded border border-edge bg-raised px-3 py-2 text-sm text-ink placeholder:text-muted/60"
           />
           <button
             type="button"
             onClick={handleAddNewPlayer}
             disabled={addingPlayer || !newPlayerName.trim()}
-            className="rounded border px-3 py-2 text-sm disabled:opacity-50"
+            className="rounded border border-edge bg-raised px-3 py-2 text-sm hover:border-gold/50 disabled:opacity-50"
           >
             Add
           </button>
@@ -144,7 +153,7 @@ export function NewEventForm({ seasonId, allPlayers }: { seasonId: string; allPl
               key={p.id}
               type="button"
               onClick={() => addToSeat(p)}
-              className="rounded-full border px-3 py-1 text-sm hover:bg-gray-100"
+              className="rounded-full border border-edge bg-surface px-3 py-1 text-sm hover:border-gold/50 hover:text-gold-bright"
             >
               + {p.name}
             </button>
@@ -152,12 +161,12 @@ export function NewEventForm({ seasonId, allPlayers }: { seasonId: string; allPl
         </div>
       </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-loss">{error}</p>}
 
       <button
         type="submit"
         disabled={loading}
-        className="rounded bg-black px-4 py-3 font-medium text-white disabled:opacity-50"
+        className="rounded bg-gold px-4 py-3 font-semibold text-black hover:bg-gold-bright disabled:opacity-50"
       >
         {loading ? "Creating…" : "Create pod & generate round 1"}
       </button>

@@ -14,7 +14,7 @@ export function SignOutButton() {
   }
 
   return (
-    <button onClick={handleSignOut} className="text-sm text-gray-600 underline">
+    <button onClick={handleSignOut} className="text-sm text-muted underline hover:text-ink">
       Sign out
     </button>
   );

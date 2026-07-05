@@ -87,11 +87,13 @@ export function PodRunner({
 
   return (
     <div className="flex flex-col gap-6">
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-loss">{error}</p>}
 
       {rounds.map((round) => (
         <div key={round.id}>
-          <h2 className="mb-2 text-sm font-semibold text-gray-500">Round {round.round_number}</h2>
+          <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">
+            Round {round.round_number}
+          </h2>
           <ul className="flex flex-col gap-2">
             {round.matches.map((m) => {
               const isPending = m.outcome === null;
@@ -101,33 +103,33 @@ export function PodRunner({
 
               if (!isPending) {
                 return (
-                  <li key={m.id} className="rounded border px-3 py-2 text-sm text-gray-600">
+                  <li key={m.id} className="rounded border border-edge bg-surface px-3 py-2 text-sm text-muted">
                     {outcomeSummary(m, playersById)}
                   </li>
                 );
               }
 
               return (
-                <li key={m.id} className="rounded border">
+                <li key={m.id} className={`rounded border bg-surface ${isExpanded ? "border-gold/60" : "border-edge"}`}>
                   <button
                     type="button"
                     onClick={() => setExpandedMatchId(isExpanded ? null : m.id)}
                     className="flex w-full items-center justify-between px-3 py-3 text-left text-base font-medium"
                   >
                     <span>
-                      {p1} vs {p2}
+                      {p1} <span className="text-muted">vs</span> {p2}
                     </span>
-                    <span className="text-gray-400">{isExpanded ? "▲" : "▼"}</span>
+                    <span className="text-muted">{isExpanded ? "▲" : "▼"}</span>
                   </button>
                   {isExpanded && (
-                    <div className="flex flex-col gap-2 border-t p-3">
+                    <div className="flex flex-col gap-2 border-t border-edge p-3">
                       {OUTCOME_BUTTONS.map(({ outcome, label }) => (
                         <button
                           key={outcome}
                           type="button"
                           disabled={submitting}
                           onClick={() => handleRecord(m.id, outcome)}
-                          className="rounded bg-gray-100 px-4 py-3 text-base font-medium active:bg-gray-200 disabled:opacity-50"
+                          className="rounded border border-edge bg-raised px-4 py-3 text-base font-medium hover:border-gold/50 hover:text-gold-bright active:bg-edge disabled:opacity-50"
                         >
                           {label(p1, p2)}
                         </button>
@@ -146,7 +148,7 @@ export function PodRunner({
           type="button"
           onClick={handleGenerateNext}
           disabled={generating}
-          className="rounded bg-black px-4 py-3 font-medium text-white disabled:opacity-50"
+          className="rounded bg-gold px-4 py-3 font-semibold text-black hover:bg-gold-bright disabled:opacity-50"
         >
           {generating ? "Generating…" : `Generate round ${rounds.length + 1}`}
         </button>
@@ -176,14 +178,19 @@ function FinalStandings({
 
   return (
     <div>
-      <h2 className="mb-2 text-sm font-semibold text-gray-500">Final standings</h2>
+      <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Final standings</h2>
       <ol className="flex flex-col gap-1">
         {standings.map((p, i) => (
-          <li key={p.id} className="flex justify-between rounded border px-3 py-2 text-sm">
+          <li
+            key={p.id}
+            className={`flex justify-between rounded border px-3 py-2 text-sm ${
+              i === 0 ? "border-gold/60 bg-gold/10 font-semibold text-gold-bright" : "border-edge bg-surface"
+            }`}
+          >
             <span>
               {i + 1}. {playersById[p.id] ?? "?"}
             </span>
-            <span className="tabular-nums text-gray-500">{p.matchPoints} pts</span>
+            <span className={`tabular-nums ${i === 0 ? "" : "text-muted"}`}>{p.matchPoints} pts</span>
           </li>
         ))}
       </ol>

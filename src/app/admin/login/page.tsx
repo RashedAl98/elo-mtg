@@ -29,8 +29,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-4">
-      <h1 className="mb-6 text-2xl font-bold">Organizer sign in</h1>
+    <div className="mx-auto flex min-h-screen w-full max-w-sm flex-col justify-center px-4">
+      <h1 className="mb-6 font-display text-2xl font-bold tracking-wide text-gold-bright">
+        Organizer sign in
+      </h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
           type="email"
@@ -39,7 +41,7 @@ export default function LoginPage() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="rounded border px-3 py-3 text-base"
+          className="rounded border border-edge bg-raised px-3 py-3 text-base text-ink placeholder:text-muted/60"
         />
         <input
           type="password"
@@ -48,13 +50,13 @@ export default function LoginPage() {
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="rounded border px-3 py-3 text-base"
+          className="rounded border border-edge bg-raised px-3 py-3 text-base text-ink placeholder:text-muted/60"
         />
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-loss">{error}</p>}
         <button
           type="submit"
           disabled={loading}
-          className="rounded bg-black px-4 py-3 text-base font-medium text-white disabled:opacity-50"
+          className="rounded bg-gold px-4 py-3 text-base font-semibold text-black hover:bg-gold-bright disabled:opacity-50"
         >
           {loading ? "Signing in…" : "Sign in"}
         </button>
