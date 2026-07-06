@@ -1,4 +1,4 @@
-export type MatchOutcomeDb = "p1_win" | "p2_win" | "draw" | "bye";
+export type MatchOutcomeDb = "p1_win" | "p2_win" | "draw";
 
 export interface Player {
   id: string;
@@ -22,39 +22,24 @@ export interface PlayerSeasonStats {
   wins: number;
   losses: number;
   draws: number;
-  byes_received: number;
-}
-
-export interface EventRow {
-  id: string;
-  season_id: string;
-  event_date: string;
-  notes: string | null;
-}
-
-export interface Pod {
-  id: string;
-  event_id: string;
-  seat_order: string[];
-}
-
-export interface Round {
-  id: string;
-  pod_id: string;
-  round_number: number;
 }
 
 export interface Match {
   id: string;
-  round_id: string;
+  season_id: string;
   player1_id: string;
-  player2_id: string | null;
-  outcome: MatchOutcomeDb | null;
-  p1_rating_before: number | null;
-  p1_rating_after: number | null;
-  p2_rating_before: number | null;
-  p2_rating_after: number | null;
-  recorded_at: string | null;
+  player2_id: string;
+  outcome: MatchOutcomeDb;
+  p1_rating_before: number;
+  p1_rating_after: number;
+  p2_rating_before: number;
+  p2_rating_after: number;
+  recorded_at: string;
+}
+
+export interface MatchWithPlayers extends Match {
+  player1: { id: string; name: string } | null;
+  player2: { id: string; name: string } | null;
 }
 
 export interface LeaderboardRow extends PlayerSeasonStats {

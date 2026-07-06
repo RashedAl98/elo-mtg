@@ -23,17 +23,14 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
   // Chronological rating curve for the current season: start rating, then rating after each match.
   const chartRatings: number[] = [];
   if (activeSeason) {
-    const seasonMatches = matchHistory
-      .filter((m) => m.season_id === activeSeason.id && m.outcome !== "bye")
-      .reverse();
+    const seasonMatches = matchHistory.filter((m) => m.season_id === activeSeason.id).reverse();
     if (seasonMatches.length > 0) {
       const first = seasonMatches[0];
       const firstIsP1 = first.player1_id === id;
       chartRatings.push(Number(firstIsP1 ? first.p1_rating_before : first.p2_rating_before) || 1500);
       for (const m of seasonMatches) {
         const isP1 = m.player1_id === id;
-        const after = isP1 ? m.p1_rating_after : m.p2_rating_after;
-        if (after !== null) chartRatings.push(Number(after));
+        chartRatings.push(Number(isP1 ? m.p1_rating_after : m.p2_rating_after));
       }
     }
   }
@@ -104,7 +101,7 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
             return (
               <li key={m.id} className="flex items-center justify-between px-4 py-2.5 text-sm">
                 <div>
-                  <span className="font-medium">{outcomeLabel(m.outcome!, isPlayer1)}</span>{" "}
+                  <span className="font-medium">{outcomeLabel(m.outcome, isPlayer1)}</span>{" "}
                   <span className="text-muted">
                     vs{" "}
                     {opponent ? (
@@ -115,7 +112,7 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
                       "—"
                     )}
                   </span>
-                  {m.event_date && <span className="ml-2 text-muted/60">· {m.event_date}</span>}
+                  <span className="ml-2 text-muted/60">· {m.recorded_at.slice(0, 10)}</span>
                 </div>
                 <span
                   className={`font-semibold tabular-nums ${

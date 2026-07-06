@@ -67,7 +67,7 @@ export default async function Home({
                 <th className="py-3 pl-4 pr-2">#</th>
                 <th className="py-3 pr-2">Player</th>
                 <th className="py-3 pr-2 text-right">Rating</th>
-                <th className="py-3 pr-2 text-right">Last event</th>
+                <th className="py-3 pr-2 text-right">Last played</th>
                 <th className="py-3 pr-2 text-right">W-L-D</th>
                 <th className="py-3 pr-4 text-right">Games</th>
               </tr>
