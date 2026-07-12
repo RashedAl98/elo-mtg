@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { applyEloUpdate, BASE_RATING, type MatchOutcome } from "@/lib/elo";
-import type { PlayerSeasonStats } from "@/lib/types";
+import type { Match, PlayerSeasonStats } from "@/lib/types";
 
 export async function upsertPlayer(name: string): Promise<string> {
   const supabase = await createClient();
@@ -106,6 +106,132 @@ export async function recordMatch({
 
   revalidatePath("/");
   revalidatePath("/admin");
+}
+
+export async function deleteMatch(matchId: string): Promise<void> {
+  const supabase = await createClient();
+
+  const { data: match, error: findError } = await supabase
+    .from("matches")
+    .select("season_id")
+    .eq("id", matchId)
+    .single();
+  if (findError) throw findError;
+
+  const { error: deleteError } = await supabase.from("matches").delete().eq("id", matchId);
+  if (deleteError) throw deleteError;
+
+  await recomputeSeason(match.season_id);
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+}
+
+/**
+ * Replays every remaining match of a season in chronological order,
+ * rewriting each match's rating-before/after and rebuilding all player
+ * stats from scratch. Needed after a deletion because ELO is sequential:
+ * removing one result shifts every rating that came after it.
+ */
+async function recomputeSeason(seasonId: string) {
+  const supabase = await createClient();
+
+  const { data: matchData, error: matchesError } = await supabase
+    .from("matches")
+    .select("*")
+    .eq("season_id", seasonId)
+    .order("recorded_at", { ascending: true })
+    .order("id", { ascending: true });
+  if (matchesError) throw matchesError;
+  const matches = matchData as Match[];
+
+  const { data: statsRows, error: statsError } = await supabase
+    .from("player_season_stats")
+    .select("player_id")
+    .eq("season_id", seasonId);
+  if (statsError) throw statsError;
+
+  const stats = new Map<string, { rating: number; games_played: number; wins: number; losses: number; draws: number }>();
+  for (const row of statsRows) {
+    stats.set(row.player_id, { rating: BASE_RATING, games_played: 0, wins: 0, losses: 0, draws: 0 });
+  }
+  const statsFor = (playerId: string) => {
+    let s = stats.get(playerId);
+    if (!s) {
+      s = { rating: BASE_RATING, games_played: 0, wins: 0, losses: 0, draws: 0 };
+      stats.set(playerId, s);
+    }
+    return s;
+  };
+
+  for (const m of matches) {
+    const p1 = statsFor(m.player1_id);
+    const p2 = statsFor(m.player2_id);
+
+    const result = applyEloUpdate({
+      p1Rating: p1.rating,
+      p2Rating: p2.rating,
+      p1GamesPlayed: p1.games_played,
+      p2GamesPlayed: p2.games_played,
+      outcome: m.outcome,
+    });
+
+    if (
+      Number(m.p1_rating_before) !== result.p1RatingBefore ||
+      Number(m.p1_rating_after) !== result.p1RatingAfter ||
+      Number(m.p2_rating_before) !== result.p2RatingBefore ||
+      Number(m.p2_rating_after) !== result.p2RatingAfter
+    ) {
+      const { error } = await supabase
+        .from("matches")
+        .update({
+          p1_rating_before: result.p1RatingBefore,
+          p1_rating_after: result.p1RatingAfter,
+          p2_rating_before: result.p2RatingBefore,
+          p2_rating_after: result.p2RatingAfter,
+        })
+        .eq("id", m.id);
+      if (error) throw error;
+    }
+
+    const p1Won = m.outcome === "p1_win";
+    const p2Won = m.outcome === "p2_win";
+    const isDraw = m.outcome === "draw";
+
+    p1.rating = result.p1RatingAfter;
+    p1.games_played += 1;
+    p1.wins += p1Won ? 1 : 0;
+    p1.losses += p2Won ? 1 : 0;
+    p1.draws += isDraw ? 1 : 0;
+
+    p2.rating = result.p2RatingAfter;
+    p2.games_played += 1;
+    p2.wins += p2Won ? 1 : 0;
+    p2.losses += p1Won ? 1 : 0;
+    p2.draws += isDraw ? 1 : 0;
+  }
+
+  const entries = [...stats.entries()];
+  const upsertRows = entries
+    .filter(([, s]) => s.games_played > 0)
+    .map(([player_id, s]) => ({ player_id, season_id: seasonId, ...s }));
+  if (upsertRows.length > 0) {
+    const { error } = await supabase
+      .from("player_season_stats")
+      .upsert(upsertRows, { onConflict: "player_id,season_id" });
+    if (error) throw error;
+  }
+
+  // Players whose only matches were deleted drop off the season leaderboard
+  const emptyPlayerIds = entries.filter(([, s]) => s.games_played === 0).map(([id]) => id);
+  if (emptyPlayerIds.length > 0) {
+    const { error } = await supabase
+      .from("player_season_stats")
+      .delete()
+      .eq("season_id", seasonId)
+      .in("player_id", emptyPlayerIds);
+    if (error) throw error;
+  }
 }
 
 async function updatePlayerStats(

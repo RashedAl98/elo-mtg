@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getActiveSeason, getAllPlayers, getRecentMatches } from "@/lib/queries";
-import type { MatchWithPlayers } from "@/lib/types";
 import { RecordMatchForm } from "./record-match-form";
+import { RecentMatches } from "./recent-matches";
 
 export default async function AdminHome() {
   const activeSeason = await getActiveSeason();
@@ -44,28 +44,5 @@ export default async function AdminHome() {
         </Link>
       </div>
     </div>
-  );
-}
-
-function RecentMatches({ matches }: { matches: MatchWithPlayers[] }) {
-  if (matches.length === 0) {
-    return <p className="text-sm text-muted">No matches recorded yet this season.</p>;
-  }
-
-  return (
-    <ul className="divide-y divide-edge/60 overflow-hidden rounded-lg border border-edge bg-surface">
-      {matches.map((m) => {
-        const p1 = m.player1?.name ?? "?";
-        const p2 = m.player2?.name ?? "?";
-        const summary =
-          m.outcome === "draw" ? `${p1} draws ${p2}` : m.outcome === "p1_win" ? `${p1} def. ${p2}` : `${p2} def. ${p1}`;
-        return (
-          <li key={m.id} className="flex items-center justify-between px-4 py-2.5 text-sm">
-            <span>{summary}</span>
-            <span className="text-muted/60">{m.recorded_at.slice(0, 10)}</span>
-          </li>
-        );
-      })}
-    </ul>
   );
 }
